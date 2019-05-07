@@ -27,7 +27,7 @@ defmodule StressFoundationdb do
           unique_end = :crypto.strong_rand_bytes(5) |> Base.encode16
           hash = "hash" <> unique_end
 
-          Enum.map(1..4, fn _ ->
+          Enum.map(1..15, fn _ ->
             FDB.Transaction.get_q(tr, "#{@prefix_unique}#{date} #{token}#{hash}")
             |> FDB.Future.map(fn offer_val -> {"offer", offer_val} end)
           end)
@@ -76,7 +76,7 @@ defmodule StressFoundationdb do
             "1"
           )
 
-          Enum.map(1..2, fn _ ->
+          Enum.map(1..get_count(), fn _ ->
             FDB.Transaction.get_q(tr, "#{@prefix_unique}#{date} #{token}#{hash}")
             |> FDB.Future.map(fn offer_val -> {"offer", offer_val} end)
           end)
@@ -90,5 +90,9 @@ defmodule StressFoundationdb do
 
   def get_speed() do
     Application.get_env(:stress_foundationdb, :speed)
+  end
+
+  def get_count() do
+    Application.get_env(:stress_foundationdb, :count)
   end
 end
