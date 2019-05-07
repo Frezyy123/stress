@@ -24,9 +24,10 @@ defmodule StressFoundationdb do
         FDB.Database.transact(db, fn tr ->
           date = Date.utc_today() |> Date.to_string()
           token = "token"
-          hash = "hash"
+          unique_end = :crypto.strong_rand_bytes(5) |> Base.encode16
+          hash = "hash" <> unique_end
 
-          Enum.map(1..2, fn _ ->
+          Enum.map(1..4, fn _ ->
             FDB.Transaction.get_q(tr, "#{@prefix_unique}#{date} #{token}#{hash}")
             |> FDB.Future.map(fn offer_val -> {"offer", offer_val} end)
           end)
@@ -44,7 +45,8 @@ defmodule StressFoundationdb do
     FDB.Database.transact(db, fn tr ->
       date = Date.utc_today() |> Date.to_string()
       token = "token"
-      hash = "hash"
+      unique_end = :crypto.strong_rand_bytes(5) |> Base.encode16
+      hash = "hash" <> unique_end
 
       :ok =
         FDB.Transaction.set(
